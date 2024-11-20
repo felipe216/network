@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <h2>Criar Perfil</h2>
+        {% if user.is_authenticated %}
+
+        <form action="{% url 'core:perfil_form' %}" method="post" class="form">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <input type="hidden" name="id" value="{{ form.user.value }}" hidden>
+            {% buttons %}
+                <button type="submit" class="btn btn-primary">Submit</button>
+            {% endbuttons %}
+        </form>
+        {% else %}
+            <p>Please <a href="{% url 'core:login' %}">login</a> to see this page.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -16,7 +16,7 @@ class UserCreateView(TemplateView):
         form = forms.UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponse(render(request, 'core/login.html'))
+            return HttpResponseRedirect(reverse('core:perfil_form'))
         return render(request, 'core/register.html', {'form': form})
     
 
@@ -41,3 +41,19 @@ class HomeView(TemplateView):
     def get(self, request, *args, **kwargs):
         print(request.user)
         return super().get(request, *args, **kwargs)
+
+
+class PerfilCreateView(TemplateView):
+    template_name = 'core/perfil_form.html'
+
+    def post(self, request, *args, **kwargs):
+        form = forms.PerfilForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('core:home'))
+        return render(request, 'core/perfil_form.html', {'form': form})
+    
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['form'] = forms.PerfilForm()
+        return ctx
