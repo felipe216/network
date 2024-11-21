@@ -3,5 +3,42 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-    <h1>Home</h1>
+    <div>
+        <h1>Home</h1>
+        <h3>Newpost</h3>
+        <div class="form-control" id="newpost">
+            <input type="text" name="text" placeholder="What's on your mind?" v-model="text">
+            <button type="submit" class="btn btn-primary" @click="newpost" v-if="text">Post</button>
+        </div>    
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        var newpost = new Vue({
+            el: '#newpost',
+            data: {
+                text: ''
+            },
+            methods: {
+                getCookie() {
+                    const match = document.cookie.match(/(^|;\s*)csrftoken=([^;]+)/);
+                    return match ? match[2] : null;
+                },
+                newpost() {
+                    const url = "{% url 'core:newpost' %}"
+
+                    axios.post(url, {
+                        'text': this.text
+                    })
+                    .then(function (response) {
+                        console.log(response);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+                }
+            }
+        })
+    </script>
 {% endblock %}

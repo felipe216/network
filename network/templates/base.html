@@ -44,6 +44,7 @@
               <span class="navbar-text">
                 {% if user.is_authenticated %}
                 Bem-vindo, {{ user.username }}!
+                {% csrf_token %}
               </span>
               {% else %}
                 <p>Please <a href="{% url 'core:login' %}">login</a> to see this page.</p>
@@ -53,5 +54,6 @@
         </nav>
       </div>
     {% block content %}{% endblock %}
+    {% block javascript %}{% endblock %}
 </body>
 </html>

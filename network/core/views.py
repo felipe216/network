@@ -5,6 +5,7 @@ from django.db import IntegrityError
 from django.views.generic import TemplateView
 from django.contrib.auth import authenticate, login
 
+
 from . import forms
 # Create your views here.
 
