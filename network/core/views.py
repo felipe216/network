@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
+from django.db import IntegrityError
 from django.views.generic import TemplateView
 from django.contrib.auth import authenticate, login
 
@@ -49,7 +50,11 @@ class PerfilCreateView(TemplateView):
     def post(self, request, *args, **kwargs):
         form = forms.PerfilForm(request.POST)
         if form.is_valid():
-            form.save()
+            form.instance.user = request.user
+            try:
+                form.save()
+            except IntegrityError:
+                return render(request, 'core/perfil_form.html', {'form': form, 'error': 'Perfil já cadastrado'})
             return HttpResponseRedirect(reverse('core:home'))
         return render(request, 'core/perfil_form.html', {'form': form})
     

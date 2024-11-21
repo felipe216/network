@@ -24,12 +24,24 @@ class Like(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
 
 class Perfil(models.Model):
+
+    class Sexo:
+        masc = 'M'
+        fem = 'F'
+        outr = 'O'
+        CHOICES = (
+            (masc, 'Masculino'),
+            (fem, 'Feminino'),
+            (outr, 'Outro'),
+        )
+
+
     nome = models.CharField(max_length=100)
     foto = models.ImageField(upload_to='fotos', null=True)
     data_nascimento = models.DateField(null=True)
-    sexo = models.CharField(max_length=1, null=True)
+    sexo = models.CharField(max_length=1, null=True, choices=Sexo.CHOICES)
     cidade = models.CharField(max_length=100, null=True)
     estado = models.CharField(max_length=100, null=True)
     pais = models.CharField(max_length=100, null=True)
     ocupacao = models.CharField(max_length=100, null=True)
-    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE, null=False, unique=True)

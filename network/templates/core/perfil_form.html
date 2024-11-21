@@ -11,11 +11,17 @@
         {% if user.is_authenticated %}
 
         <form action="{% url 'core:perfil_form' %}" method="post" class="form">
+            {% bootstrap_form_errors form %}
+            {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endif %}
             {% csrf_token %}
             {% bootstrap_form form %}
             <input type="hidden" name="id" value="{{ form.user.value }}" hidden>
             {% buttons %}
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary">Salvar</button>
             {% endbuttons %}
         </form>
         {% else %}
