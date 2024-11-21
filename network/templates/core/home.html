@@ -29,8 +29,8 @@
                     const url = "{% url 'core:newpost' %}"
 
                     axios.post(url, {
-                        'text': this.text
-                    })
+                        'text': this.text}, { headers: { 'X-CSRFToken': getCSRFToken() }}
+                    )
                     .then(function (response) {
                         console.log(response);
                     })
