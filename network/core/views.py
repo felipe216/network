@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .models import Post
+from .models import Post, Like
 
 from .serializers import PostSerializer
 
@@ -90,3 +90,19 @@ class NewPostView(APIView):
         except:
             return HttpResponse(status=400)
         
+
+class LikeView(APIView):
+
+    def post(self, request, *args, **kwargs):
+        post_id = request.data["post"]
+        comment_id = request.data.get("comment", None)
+        user = request.user
+        post = Post.objects.get(id=post_id)
+        like = post.likes.filter(user=user, comment=comment_id, post=post)
+        if like.exists():
+            like.delete()
+            return Response(status=200)
+        else:
+            like = Like(post=post, user=user, comment=comment_id)
+            like.save()
+            return Response(status=200)

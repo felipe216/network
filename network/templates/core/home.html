@@ -30,6 +30,7 @@
                 <p class="card-text">
                     <small class="text-muted">{{ post.date_formatada }}</small>
                 </p>
+                <button class="btn btn-primary" @click="sendLike(post.id)">Like</button>
             </div>
         </div>
         {% endverbatim %}
@@ -78,6 +79,25 @@
             methods: {
                 setPosts() {
                     this.posts = posts
+                },
+                getCookie() {
+                    const match = document.cookie.match(/(^|;\s*)csrftoken=([^;]+)/);
+                    return match ? match[2] : null;
+                },
+                sendLike(id) {
+                    const url = "{% url 'core:like' %}"
+                    const obj = {
+                        'post': id,
+                        'comment': null
+                    }
+                    axios.post(url, obj, { headers: { 'X-CSRFToken': this.getCookie() }}
+                    )
+                    .then(function (response) {
+                        this.posts.push(response.data);   
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
                 }
             },           
             mounted() {
