@@ -6,8 +6,11 @@ from django.views.generic import TemplateView
 from django.contrib.auth import authenticate, login
 
 from rest_framework.views import APIView
+from rest_framework.response import Response
 
 from .models import Post
+
+from .serializers import PostSerializer
 
 from . import forms
 # Create your views here.
@@ -34,6 +37,9 @@ class LoginView(TemplateView):
         user = authenticate(request, username=username, password=password)
         if user is None:
             user = authenticate(request, email=username, password=password)
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect(reverse('core:home'))
         if user is not None:
             login(request, user)
             return HttpResponseRedirect(reverse('core:home'))
@@ -43,10 +49,13 @@ class LoginView(TemplateView):
 class HomeView(TemplateView):
     template_name = 'core/home.html'
 
-    def get(self, request, *args, **kwargs):
-        print(request.user)
-        return super().get(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        posts = Post.objects.all()
 
+        serializer = PostSerializer(list(posts), many=True)
+        ctx['posts'] = serializer.data
+        return ctx
 
 class PerfilCreateView(TemplateView):
     template_name = 'core/perfil_form.html'
@@ -71,12 +80,13 @@ class PerfilCreateView(TemplateView):
 class NewPostView(APIView):
 
     def post(self, request, *args, **kwargs):
-        text = request.POST["text"]
+        text = request.data["text"]
         user = request.user
         post = Post(text=text, author=user)
         try:
             post.save()
-            return HttpResponse(status=200)
+            post =  PostSerializer(post).data
+            return Response(post, status=200)
         except:
             return HttpResponse(status=400)
         

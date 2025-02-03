@@ -3,22 +3,48 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-    <div>
-        <h1>Home</h1>
-        <h3>Newpost</h3>
-        <div class="form-control" id="newpost">
-            <input type="text" name="text" placeholder="What's on your mind?" v-model="text">
-            <button type="submit" class="btn btn-primary" @click="newpost" v-if="text">Post</button>
-        </div>    
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Home</h1>
+
+    <!-- Novo Post -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Novo Post</h3>
+        </div>
+        <div class="card-body" id="newpost">
+            <div class="input-group">
+                <input type="text" class="form-control" name="text" placeholder="O que você está pensando?" v-model="text">
+                <div class="input-group-append" v-if="text">
+                    <button class="btn btn-primary" @click="newpost">Postar</button>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <div id="posts">
+        {% verbatim %}
+        <div v-for="post in posts" :key="post.id" class="card mb-3 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">{{ post.author_name }}</h5>
+                <p class="card-text">{{ post.text }}</p>
+                <p class="card-text">
+                    <small class="text-muted">{{ post.date_formatada }}</small>
+                </p>
+            </div>
+        </div>
+        {% endverbatim %}
+    </div>
+</div>
+
 {% endblock %}
 
 {% block javascript %}
     <script>
+        var posts = {{ posts|safe }};
         var newpost = new Vue({
             el: '#newpost',
             data: {
-                text: ''
+                text: '',
             },
             methods: {
                 getCookie() {
@@ -29,15 +55,33 @@
                     const url = "{% url 'core:newpost' %}"
 
                     axios.post(url, {
-                        'text': this.text}, { headers: { 'X-CSRFToken': getCSRFToken() }}
+                        'text': this.text}, { headers: { 'X-CSRFToken': this.getCookie() }}
                     )
                     .then(function (response) {
-                        console.log(response);
+                        this.posts.push(response.data);   
+              
                     })
                     .catch(function (error) {
                         console.log(error);
                     });
+                    this.text = ''
+                },                
+            },
+            mounted() {
+            }
+        })
+        var post = new Vue({
+            el: '#posts',
+            data: {
+                posts: []
+            },
+            methods: {
+                setPosts() {
+                    this.posts = posts
                 }
+            },           
+            mounted() {
+                this.posts = posts
             }
         })
     </script>
