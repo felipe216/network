@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
@@ -53,8 +54,8 @@ class HomeView(TemplateView):
         ctx = super().get_context_data(**kwargs)
         posts = Post.objects.all()
 
-        serializer = PostSerializer(list(posts), many=True)
-        ctx['posts'] = serializer.data
+        serializer = PostSerializer(list(posts), many=True, context={'request': self.request})
+        ctx['posts'] = json.dumps(serializer.data)
         return ctx
 
 class PerfilCreateView(TemplateView):
@@ -101,8 +102,8 @@ class LikeView(APIView):
         like = post.likes.filter(user=user, comment=comment_id, post=post)
         if like.exists():
             like.delete()
-            return Response(status=200)
+            return Response({"liked": False}, status=200)
         else:
             like = Like(post=post, user=user, comment=comment_id)
             like.save()
-            return Response(status=200)
+            return Response({"liked": True}, status=200)

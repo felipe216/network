@@ -30,7 +30,20 @@
                 <p class="card-text">
                     <small class="text-muted">{{ post.date_formatada }}</small>
                 </p>
-                <button class="btn btn-primary" @click="sendLike(post.id)">Like</button>
+
+                    <button 
+                    class="btn btn-success" 
+                    :disabled="post.liked == true" 
+                    @click="sendLike(post.id, true)">
+                    Like
+                </button>
+                <button 
+                    class="btn btn-danger" 
+                    :disabled="post.liked == false" 
+                    @click="sendLike(post.id, false)">
+                    Dislike
+                </button>
+                <span>{{ post.likes_num }}</span>
             </div>
         </div>
         {% endverbatim %}
@@ -93,7 +106,19 @@
                     axios.post(url, obj, { headers: { 'X-CSRFToken': this.getCookie() }}
                     )
                     .then(function (response) {
-                        this.posts.push(response.data);   
+                        if(response.status == 200) {
+                            this.posts.forEach(post => {
+                                if(post.id == id) {
+                                    if(response.data.liked) {
+                                        post.likes_num += 1                                        
+                                    }
+                                    else {
+                                        post.likes_num -= 1
+                                    }
+                                    post.liked = !post.liked
+                                }
+                            });
+                        }  
                     })
                     .catch(function (error) {
                         console.log(error);
