@@ -10,6 +10,7 @@ urlpatterns = [
     path('login/', views.LoginView.as_view(), name='login'),
     path('home/', views.HomeView.as_view(), name='home'),
     path('perfil/novo', views.PerfilCreateView.as_view(), name='perfil_form'),
+    path('profile/', views.ProfileView.as_view(), name='profile'),
     path('newpost/', views.NewPostView.as_view(), name='newpost'),
     path('like/', views.LikeView.as_view(), name='like'),
 ]

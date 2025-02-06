@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate, login
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .models import Post, Like
+from .models import Post, Like, Perfil
 
 from .serializers import PostSerializer
 
@@ -107,3 +107,14 @@ class LikeView(APIView):
             like = Like(post=post, user=user, comment=comment_id)
             like.save()
             return Response({"liked": True}, status=200)
+        
+
+class ProfileView(TemplateView):
+    template_name = 'core/profile.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        perfil = Perfil.objects.get(user=self.request.user)
+        ctx['photo'] = perfil.foto
+        
+        return ctx
